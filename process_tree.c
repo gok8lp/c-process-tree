@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <unistd.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 /*
@@ -71,10 +71,9 @@ void process_leaf(void){
 }
 
 int read_file(int pid){
-	srand(getpid());
-	int r = rand() % 100;
+	int r = 0;
 	char filename[20];
-	sprintf(filename, "%d.txt", getpid());
+	sprintf(filename, "%d.txt", pid);
 	FILE *ptr = fopen(filename, "r");
 	fscanf(ptr, "%d", &r);
 	fclose(ptr);
@@ -105,7 +104,8 @@ void tree(int height){
 		int pid2 = fork();
 		if(pid2 > 0){
 			printf("parent: %d, lchild: %d, rchild: %d, height:%d\n", getpid(), pid, pid2, height);
-			wait(NULL);
+			waitpid(pid, NULL, 0);
+			waitpid(pid2, NULL, 0);
 			int result = parent_process(pid, pid2);
 			if(height == 3){
 				printf("RESULT: %d\n", result);
